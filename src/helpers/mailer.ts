@@ -7,27 +7,28 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
     const hashedToken = await bcryptjs.hash(userId.toString(), 10);
 
     if (emailType === "VERIFY") {
-      await User.findByIdAndUpdate(userId, {
+      await User.findByIdAndUpdate(userId, {$set: {
         verifyToken: hashedToken,
         verifyTokenExpiry: Date.now() + 3600000,
-      });
+      }});
     } else if (emailType === "RESET") {
-      await User.findByIdAndUpdate(userId, {
+      await User.findByIdAndUpdate(userId,{$set: {
         forgotPasswordToken: hashedToken,
         forgotPasswordTokenExpiry: Date.now() + 3600000,
-      });
+      }});
     }
 
     const transport = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: process.env.SMTP_HOST,
+      port: 2525,
       auth: {
-        user: process.env.SMTP_EMAIL,
+        user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASSWORD,
       },
     });
 
     const mailOptions = {
-      from: process.env.SMTP_EMAIL,
+      from: "kaushik@k.dev",
       to: email,
       subject:
         emailType === "VERIFY" ? "Verify your email" : "Reset your password",

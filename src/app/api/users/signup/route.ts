@@ -35,15 +35,18 @@ export async function POST(request: NextRequest) {
     console.log(savedUser);
 
     //Send verification email
-    await sendEmail({email, emailType: "VERIFY", userId: savedUser._id})
+    await sendEmail({ email, emailType: "VERIFY", userId: savedUser._id });
     return NextResponse.json({
-        message: "User registered successfully",
-        success: true,
-        savedUser
-    })
-
-
+      message: "User registered successfully",
+      success: true,
+      savedUser,
+      //TODO: dont send saveduser in response
+    });
   } catch (err: any) {
-    return NextResponse.json({ error: err }, { status: 500 });
+    console.log(err)
+    return NextResponse.json(
+      { msg: "oops! something went wrong on our side." },
+      { status: 500 }
+    );
   }
 }
